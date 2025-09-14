@@ -1,0 +1,21 @@
+#home-div {
+    display: flex;
+    flex-direction: column;
+    background-color: antiquewhite;
+    width: 100vw;
+    height: 100vh;
+    align-content: center;
+    justify-content: center;
+}
+
+#home-title {
+    font-size: 80px;
+}
+
+.home-button {
+    width: fit-content;
+    margin:10px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 20px;
+}

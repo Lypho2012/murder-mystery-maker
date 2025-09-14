@@ -1,0 +1,24 @@
+#board-div {
+    display: flex;
+    flex-direction: column;
+    background-color: antiquewhite;
+    width: 100vw;
+    height: 100vh;
+    align-content: center;
+}
+
+#board-title {
+    font-size: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+    background: none;
+    &:hover {
+        border-bottom: 1px solid black;
+    }
+    &:focus {
+        outline: none;
+        border-bottom: 2px solid black;
+    }
+    text-align: center;
+}
