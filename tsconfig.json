@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-  ]
+, "src/backend/firebase_backend.tsx"  ]
 }

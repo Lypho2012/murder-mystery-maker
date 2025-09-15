@@ -7,7 +7,7 @@ function Home() {
         <div id="home-div">
             <p id="home-title">Murder Mystery Maker</p>
             <button className="home-button" onClick={()=> {navigate("/murder-board")}}>New</button>
-            <button className="home-button">Load</button>
+            <button className="home-button" onClick={()=> {navigate("/saved-boards")}}>Load</button>
         </div>
     )
 }
