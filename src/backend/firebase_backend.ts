@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, doc, getDoc, Timestamp, updateDoc } from 'firebase/firestore/lite';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -60,11 +60,22 @@ async function getName(id: string) {
   return res
 }
 
+async function setLastModified(id: string, newValue: any) {
+  const ref = doc(db, 'murdermysteries', id);
+  await updateDoc(ref, {"last modified": newValue});
+}
+
+async function setName(id: string, newValue: string) {
+  const ref = doc(db, 'murdermysteries', id);
+  await updateDoc(ref, {"name": newValue});
+}
+
 const express = require("express");
 const cors = require("cors");
 
 const express_app = express();
 express_app.use(cors());
+express_app.use(express.json());
 
 const PORT = process.env.PORT || 8000;
 express_app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
@@ -82,4 +93,12 @@ express_app.get("/get-last-modified/:id", async (req: any, res: any) => {
 express_app.get("/get-name/:id", async (req: any, res: any) => {
   const name = await getName(req.params.id);
   res.send(name);
+});
+
+express_app.post("/set-name/:id", async (req: any, res: any) => {
+  const {title} = req.body
+  await setName(req.params.id,title);
+  await setLastModified(req.params.id,Timestamp.now())
+  const modified = await getLastModified(req.params.id)
+  res.send(modified);
 });
