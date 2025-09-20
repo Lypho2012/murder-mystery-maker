@@ -3,6 +3,7 @@ import "./MurderBoard.css"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { Timestamp } from "firebase/firestore/lite"
+
 function MurderBoard() {
   const {boardId} = useParams()
   const [title, setTitle] = useState("")
@@ -47,10 +48,8 @@ function MurderBoard() {
   return (
     <div id="board-div">
       <button id="home-button"><img id="home-button-img" src={require("../images/home_button.png")} alt="home button" onClick={()=> {navigate("/")}} /></button>
-      <div id="board-top-div">
-        <input type="text" id="board-title" value={title} onChange={e => changeTitle(e.target.value)}/>
-        <div>Last Saved {lastSaved.toDate().toLocaleDateString()} {lastSaved.toDate().toLocaleTimeString()}</div>
-      </div>
+      <input type="text" id="board-title" value={title} onChange={e => changeTitle(e.target.value)}/>
+      <div>Last Saved {lastSaved.toDate().toLocaleDateString()} {lastSaved.toDate().toLocaleTimeString()}</div>
     </div>
   )
 }
