@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, Timestamp, updateDoc } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, doc, getDoc, Timestamp, updateDoc, addDoc } from 'firebase/firestore/lite';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -70,6 +70,14 @@ async function setName(id: string, newValue: string) {
   await updateDoc(ref, {"name": newValue});
 }
 
+async function addBoard() {
+  const ref = await addDoc(collection(db, "murdermysteries"), {
+    name: "Untitled",
+    "last modified": Timestamp.now()
+  });
+  return ref.id
+}
+
 const express = require("express");
 const cors = require("cors");
 
@@ -101,4 +109,9 @@ express_app.post("/set-name/:id", async (req: any, res: any) => {
   await setLastModified(req.params.id,Timestamp.now())
   const modified = await getLastModified(req.params.id)
   res.send(modified);
+});
+
+express_app.post("/add-board", async (req: any, res: any) => {
+  const boardId = await addBoard()
+  res.send(boardId)
 });

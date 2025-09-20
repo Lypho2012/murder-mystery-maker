@@ -1,5 +1,14 @@
 #board-div {
     display: flex;
+    flex-direction: row;
+    background-color: antiquewhite;
+    width: 100vw;
+    height: 100vh;
+    padding: 10px;
+}
+
+#board-top-div {
+    display: flex;
     flex-direction: column;
     background-color: antiquewhite;
     width: 100vw;
@@ -21,4 +30,17 @@
         border-bottom: 2px solid black;
     }
     text-align: center;
+}
+
+#home-button {
+    background: none;
+    border: none;
+    margin-bottom: auto;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+#home-button-img {
+    width: 40px;
 }

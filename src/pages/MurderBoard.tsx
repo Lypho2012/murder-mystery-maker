@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import "./MurderBoard.css"
 import { useEffect, useState } from "react"
 import axios from "axios"
@@ -43,10 +43,14 @@ function MurderBoard() {
     fetchData()
   }
 
+  const navigate = useNavigate()
   return (
     <div id="board-div">
-      <input type="text" id="board-title" value={title} onChange={e => changeTitle(e.target.value)}/>
-      <div>Last Saved {lastSaved.toDate().toLocaleDateString()} {lastSaved.toDate().toLocaleTimeString()}</div>
+      <button id="home-button"><img id="home-button-img" src={require("../images/home_button.png")} alt="home button" onClick={()=> {navigate("/")}} /></button>
+      <div id="board-top-div">
+        <input type="text" id="board-title" value={title} onChange={e => changeTitle(e.target.value)}/>
+        <div>Last Saved {lastSaved.toDate().toLocaleDateString()} {lastSaved.toDate().toLocaleTimeString()}</div>
+      </div>
     </div>
   )
 }
