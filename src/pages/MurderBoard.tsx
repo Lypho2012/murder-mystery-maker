@@ -1,13 +1,17 @@
 import { useNavigate, useParams } from "react-router-dom"
 import "./MurderBoard.css"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import { Timestamp } from "firebase/firestore/lite"
+import Draggable from 'react-draggable';
 
 function MurderBoard() {
   const {boardId} = useParams()
   const [title, setTitle] = useState("")
   const [lastSaved, setLastSaved] = useState(new Timestamp(0,0))
+  const [characters, setCharacters] = useState([])
+
+  const nodeRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,7 +23,11 @@ function MurderBoard() {
             setLastSaved(new Timestamp(
               result2.data.seconds,
               result2.data.nanoseconds
-          ))
+            ))
+
+            const result3 = await axios.get('http://localhost:8000/get-characters/'+boardId);
+            setCharacters(result3.data)
+            console.log(characters)
         } catch (e) {
             console.error("Error fetching data:", e);
         }
@@ -48,8 +56,30 @@ function MurderBoard() {
   return (
     <div id="board-div">
       <button id="home-button"><img id="home-button-img" src={require("../images/home_button.png")} alt="home button" onClick={()=> {navigate("/")}} /></button>
+      
       <input type="text" id="board-title" value={title} onChange={e => changeTitle(e.target.value)}/>
       <div>Last Saved {lastSaved.toDate().toLocaleDateString()} {lastSaved.toDate().toLocaleTimeString()}</div>
+      
+      <button id="add-char-button">+</button>
+      
+      <div id="characters-div">
+      {
+        characters.length == 0 ? 
+        <div>Empty</div> 
+        : characters.map((character) => 
+          <Draggable bounds="parent" nodeRef={nodeRef}>
+            <div className="character-div" ref={nodeRef}>
+              <div className="character-topbar">
+                <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/edit.png")} alt="edit button" onClick={()=> {}} /></button>
+                <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/delete.png")} alt="delete button" onClick={()=> {}} /></button>
+              </div>
+              <img className="character-profile-img" src={require("../images/profile.png")} alt="character profile"/>
+              <div>{character["name"]}</div>
+            </div>
+          </Draggable>
+        )
+      }
+      </div>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, Timestamp, updateDoc, addDoc } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, doc, getDoc, Timestamp, updateDoc, addDoc, DocumentReference } from 'firebase/firestore/lite';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -50,6 +50,12 @@ async function getField(id: string, field: string) {
   return null;
 }
 
+async function getCharacterField(docref: DocumentReference, field: string) {
+  const data = await getDoc(docref);
+  if (data.exists()) return data.data()[field]
+  return null;
+}
+
 async function getLastModified(id: string) {
   const res = await getField(id,"last modified")
   return res
@@ -76,6 +82,26 @@ async function addBoard() {
     "last modified": Timestamp.now()
   });
   return ref.id
+}
+
+async function getCharacters(id: string) {
+  const docref = doc(db, 'murdermysteries', id);
+  const collectionref = collection(docref,"Characters")
+  const data_snapshot = await getDocs(collectionref);
+  const promises = data_snapshot.docs.map(async (doc) => {
+    return {
+      "id": doc.id,
+      "name": doc.get('name'),
+      "background":doc.get('Background'),
+      "evidences":doc.get('Evidences'),
+      "victim":doc.get('Victim')
+    };
+  });
+
+  const data_list = await Promise.all(promises);
+  console.log(data_list)
+  
+  return data_list;
 }
 
 const express = require("express");
@@ -114,4 +140,9 @@ express_app.post("/set-name/:id", async (req: any, res: any) => {
 express_app.post("/add-board", async (req: any, res: any) => {
   const boardId = await addBoard()
   res.send(boardId)
+});
+
+express_app.get("/get-characters/:id", async (req: any, res: any) => {
+  const characters = await getCharacters(req.params.id);
+  res.send(characters);
 });
