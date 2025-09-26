@@ -60,9 +60,10 @@
 }
 
 .character-div {
-    width: 100px;
-    height: 150px;
-    padding: 5px;
+    width: 130px;
+    height: 140px;
+    padding-top: 10px;
+    background-color: rgb(253, 255, 240);
     &:hover .character-topbar{
         visibility: visible;
     }
@@ -72,13 +73,14 @@
     display: flex;
     flex-direction: row;
     position: fixed;
-    visibility: hidden;
+    visibility: visible;
     justify-content: flex-end;
     width: 100%;
 }
 
 .character-profile-img {
     width: 90px;
+    padding-top: 15px;
 }
 
 .character-topbar-button-img {
@@ -91,4 +93,9 @@
     &:hover {
         cursor: pointer;
     }
+}
+
+.character-name {
+    overflow:hidden;
+    text-overflow: ellipsis;
 }

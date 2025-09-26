@@ -74,7 +74,7 @@ function MurderBoard() {
                 <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/delete.png")} alt="delete button" onClick={()=> {}} /></button>
               </div>
               <img className="character-profile-img" src={require("../images/profile.png")} alt="character profile"/>
-              <div>{character["name"]}</div>
+              <div className="character-name">{character["name"]}</div>
             </div>
           </Draggable>
         )
