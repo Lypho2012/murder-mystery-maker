@@ -73,14 +73,16 @@
     display: flex;
     flex-direction: row;
     position: fixed;
-    visibility: visible;
+    visibility: hidden;
     justify-content: flex-end;
     width: 100%;
 }
 
 .character-profile-img {
     width: 90px;
-    padding-top: 15px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color:dimgray;
 }
 
 .character-topbar-button-img {
