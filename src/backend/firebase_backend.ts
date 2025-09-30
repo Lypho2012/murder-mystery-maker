@@ -99,7 +99,6 @@ async function getCharacters(id: string) {
   });
 
   const data_list = await Promise.all(promises);
-  console.log(data_list)
   
   return data_list;
 }

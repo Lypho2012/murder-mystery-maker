@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import { Timestamp } from "firebase/firestore/lite"
 import Draggable from 'react-draggable';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function MurderBoard() {
   const {boardId} = useParams()
@@ -53,6 +56,12 @@ function MurderBoard() {
   }
 
   const navigate = useNavigate()
+
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  const handleCloseDeleteConfirmation = () => setShowDeleteConfirmation(false);
+  const handleShowDeleteConfirmation = () => setShowDeleteConfirmation(true);
+
   return (
     <div id="board-div">
       <button id="home-button"><img id="home-button-img" src={require("../images/home_button.png")} alt="home button" onClick={()=> {navigate("/")}} /></button>
@@ -70,8 +79,8 @@ function MurderBoard() {
           <Draggable bounds="parent" nodeRef={nodeRef}>
             <div className="character-div" ref={nodeRef}>
               <div className="character-topbar">
-                <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/edit.png")} alt="edit button" onClick={()=> {}} /></button>
-                <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/delete.png")} alt="delete button" onClick={()=> {}} /></button>
+                <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/edit.png")} alt="edit button" onClick={(e)=> {e.stopPropagation()}} /></button>
+                <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/delete.png")} alt="delete button" onClick={(e)=> {e.stopPropagation();handleShowDeleteConfirmation()}} /></button>
               </div>
               <img className="character-profile-img" src={require("../images/profile.png")} alt="character profile"/>
               <div className="character-name">{character["name"]}</div>
@@ -79,6 +88,17 @@ function MurderBoard() {
           </Draggable>
         )
       }
+      <Modal show={showDeleteConfirmation} onHide={handleCloseDeleteConfirmation}>
+        <Modal.Body>Are you sure you want to delete this character?</Modal.Body>
+        <Modal.Footer>
+          <Button onClick={handleCloseDeleteConfirmation}>
+            Cancel
+          </Button>
+          <Button onClick={handleCloseDeleteConfirmation}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
       </div>
     </div>
   )
