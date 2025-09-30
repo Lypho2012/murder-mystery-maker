@@ -103,6 +103,13 @@ async function getCharacters(id: string) {
   return data_list;
 }
 
+async function addCharacter(id: string) {
+  const docref = doc(db, 'murdermysteries', id);
+  await addDoc(collection(docref, "Characters"), {
+    name: "No name"
+  })
+}
+
 const express = require("express");
 const cors = require("cors");
 
@@ -144,4 +151,11 @@ express_app.post("/add-board", async (req: any, res: any) => {
 express_app.get("/get-characters/:id", async (req: any, res: any) => {
   const characters = await getCharacters(req.params.id);
   res.send(characters);
+});
+
+express_app.post("/add-char/:id", async (req: any, res: any) => {
+  await addCharacter(req.params.id);
+  await setLastModified(req.params.id,Timestamp.now())
+  const modified = await getLastModified(req.params.id)
+  res.send(modified);
 });

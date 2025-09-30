@@ -45,12 +45,14 @@
     right: 10px;
     bottom: 10px;
     position: fixed;
-    font-size: 40px;
-    padding-left: 10px;
-    padding-right: 10px;
+    background: none;
+    border: none;
     &:hover {
         cursor: pointer;
     }
+}
+#add-button-img {
+    width: 50px;
 }
 
 #characters-div {

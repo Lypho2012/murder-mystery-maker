@@ -55,6 +55,21 @@ function MurderBoard() {
     fetchData()
   }
 
+  const addChar = () => {
+    const fetchData = async () => {
+        try {
+          const result = await axios.post('http://localhost:8000/add-char/'+boardId);
+          setLastSaved(new Timestamp(
+            result.data.seconds,
+            result.data.nanoseconds
+        ))
+        } catch (e) {
+            console.error("Error fetching data:", e);
+        }
+    };
+    fetchData()
+  }
+
   const navigate = useNavigate()
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -69,7 +84,7 @@ function MurderBoard() {
       <input type="text" id="board-title" value={title} onChange={e => changeTitle(e.target.value)}/>
       <div>Last Saved {lastSaved.toDate().toLocaleDateString()} {lastSaved.toDate().toLocaleTimeString()}</div>
       
-      <button id="add-char-button">+</button>
+      <button id="add-char-button"><img id="add-button-img" src={require("../images/add.png")} alt="add button" onClick={()=> {addChar()}} /></button>
       
       <div id="characters-div">
       {
