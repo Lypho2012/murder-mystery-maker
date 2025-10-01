@@ -30,7 +30,6 @@ function MurderBoard() {
 
             const result3 = await axios.get('http://localhost:8000/get-characters/'+boardId);
             setCharacters(result3.data)
-            console.log(characters)
         } catch (e) {
             console.error("Error fetching data:", e);
         }
@@ -73,9 +72,25 @@ function MurderBoard() {
   const navigate = useNavigate()
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deleteCharId, setDeleteCharId] = useState(0);
 
   const handleCloseDeleteConfirmation = () => setShowDeleteConfirmation(false);
   const handleShowDeleteConfirmation = () => setShowDeleteConfirmation(true);
+  const handleDeleteCharacter = () => {
+    handleCloseDeleteConfirmation();
+    const fetchData = async () => {
+        try {
+          const result = await axios.post('http://localhost:8000/delete-char/'+boardId+'/'+deleteCharId);
+          setLastSaved(new Timestamp(
+            result.data.seconds,
+            result.data.nanoseconds
+        ))
+        } catch (e) {
+            console.error("Error fetching data:", e);
+        }
+    };
+    fetchData()
+  }
 
   return (
     <div id="board-div">
@@ -95,7 +110,11 @@ function MurderBoard() {
             <div className="character-div" ref={nodeRef}>
               <div className="character-topbar">
                 <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/edit.png")} alt="edit button" onClick={(e)=> {e.stopPropagation()}} /></button>
-                <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/delete.png")} alt="delete button" onClick={(e)=> {e.stopPropagation();handleShowDeleteConfirmation()}} /></button>
+                <button className="character-topbar-button">
+                  <img className="character-topbar-button-img" src={require("../images/delete.png")} alt="delete button" onClick={(e)=> {
+                  e.stopPropagation();
+                  handleShowDeleteConfirmation();
+                  setDeleteCharId(character["id"]);}} /></button>
               </div>
               <img className="character-profile-img" src={require("../images/profile.png")} alt="character profile"/>
               <div className="character-name">{character["name"]}</div>
@@ -109,7 +128,7 @@ function MurderBoard() {
           <Button onClick={handleCloseDeleteConfirmation}>
             Cancel
           </Button>
-          <Button onClick={handleCloseDeleteConfirmation}>
+          <Button onClick={handleDeleteCharacter}>
             Confirm
           </Button>
         </Modal.Footer>
