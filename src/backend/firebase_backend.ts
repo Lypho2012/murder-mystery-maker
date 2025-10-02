@@ -142,9 +142,9 @@ express_app.get("/get-name/:id", async (req: any, res: any) => {
 express_app.post("/set-name/:id", async (req: any, res: any) => {
   const {title} = req.body
   await setName(req.params.id,title);
-  await setLastModified(req.params.id,Timestamp.now())
-  const modified = await getLastModified(req.params.id)
-  res.send(modified);
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.id,time_now)
+  res.send(time_now);
 });
 
 express_app.post("/add-board", async (req: any, res: any) => {
@@ -159,14 +159,22 @@ express_app.get("/get-characters/:id", async (req: any, res: any) => {
 
 express_app.post("/add-char/:id", async (req: any, res: any) => {
   await addCharacter(req.params.id);
-  await setLastModified(req.params.id,Timestamp.now())
-  const modified = await getLastModified(req.params.id)
-  res.send(modified);
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.id,time_now)
+  let characters = await getCharacters(req.params.id)
+  res.json({
+    "lastModified": time_now,
+    "characters": characters
+  })
 });
 
-express_app.post("/delete-char/:boardId/:charId", async (req: any, res: any) => {
+express_app.delete("/delete-char/:boardId/:charId", async (req: any, res: any) => {
   await deleteCharacter(req.params.boardId,req.params.charId);
-  await setLastModified(req.params.boardId,Timestamp.now())
-  const modified = await getLastModified(req.params.boardId)
-  res.send(modified);
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.boardId,time_now)
+  let characters = await getCharacters(req.params.boardId)
+  res.json({
+    "lastModified": time_now,
+    "characters": characters
+  })
 });

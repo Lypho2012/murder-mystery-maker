@@ -14,33 +14,30 @@ function MurderBoard() {
   const [lastSaved, setLastSaved] = useState(new Timestamp(0,0))
   const [characters, setCharacters] = useState([])
 
-  const nodeRef = useRef(null);
+  const fetchData = async () => {
+      try {
+          const result = await axios.get('http://localhost:8000/get-name/'+boardId);
+          setTitle(result.data)
 
+          const result2 = await axios.get('http://localhost:8000/get-last-modified/'+boardId);
+          setLastSaved(new Timestamp(
+            result2.data.seconds,
+            result2.data.nanoseconds
+          ))
+
+          const result3 = await axios.get('http://localhost:8000/get-characters/'+boardId);
+          setCharacters(result3.data)
+      } catch (e) {
+          console.error("Error fetching data:", e);
+      }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const result = await axios.get('http://localhost:8000/get-name/'+boardId);
-            setTitle(result.data)
-
-            const result2 = await axios.get('http://localhost:8000/get-last-modified/'+boardId);
-            setLastSaved(new Timestamp(
-              result2.data.seconds,
-              result2.data.nanoseconds
-            ))
-
-            const result3 = await axios.get('http://localhost:8000/get-characters/'+boardId);
-            setCharacters(result3.data)
-        } catch (e) {
-            console.error("Error fetching data:", e);
-        }
-    };
-
     fetchData();
   }, []);
 
   const changeTitle = (newTitle: string) => {
     setTitle(newTitle)
-    const fetchData = async () => {
+    const performQuery = async () => {
         try {
           const result = await axios.post('http://localhost:8000/set-name/'+boardId,{title:newTitle});
           setLastSaved(new Timestamp(
@@ -51,22 +48,23 @@ function MurderBoard() {
             console.error("Error fetching data:", e);
         }
     };
-    fetchData()
+    performQuery()
   }
 
   const addChar = () => {
-    const fetchData = async () => {
+    const performQuery = async () => {
         try {
           const result = await axios.post('http://localhost:8000/add-char/'+boardId);
           setLastSaved(new Timestamp(
-            result.data.seconds,
-            result.data.nanoseconds
-        ))
+            result.data["lastModified"].seconds,
+            result.data["lastModified"].nanoseconds
+          ))
+          setCharacters(result.data["characters"])
         } catch (e) {
             console.error("Error fetching data:", e);
         }
     };
-    fetchData()
+    performQuery()
   }
 
   const navigate = useNavigate()
@@ -78,18 +76,19 @@ function MurderBoard() {
   const handleShowDeleteConfirmation = () => setShowDeleteConfirmation(true);
   const handleDeleteCharacter = () => {
     handleCloseDeleteConfirmation();
-    const fetchData = async () => {
+    const performQuery = async () => {
         try {
-          const result = await axios.post('http://localhost:8000/delete-char/'+boardId+'/'+deleteCharId);
+          const result = await axios.delete('http://localhost:8000/delete-char/'+boardId+'/'+deleteCharId);
           setLastSaved(new Timestamp(
-            result.data.seconds,
-            result.data.nanoseconds
-        ))
+            result.data["lastModified"].seconds,
+            result.data["lastModified"].nanoseconds
+          ))
+          setCharacters(result.data["characters"])
         } catch (e) {
             console.error("Error fetching data:", e);
         }
     };
-    fetchData()
+    performQuery()
   }
 
   return (
@@ -106,8 +105,8 @@ function MurderBoard() {
         characters.length == 0 ? 
         <div>Empty</div> 
         : characters.map((character) => 
-          <Draggable bounds="parent" nodeRef={nodeRef}>
-            <div className="character-div" ref={nodeRef}>
+          <Draggable bounds="parent" key={character["id"]}>
+            <div className="character-div">
               <div className="character-topbar">
                 <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/edit.png")} alt="edit button" onClick={(e)=> {e.stopPropagation()}} /></button>
                 <button className="character-topbar-button">
