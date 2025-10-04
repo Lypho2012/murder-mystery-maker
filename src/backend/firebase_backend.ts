@@ -94,7 +94,9 @@ async function getCharacters(id: string) {
       "name": doc.get('name'),
       "background":doc.get('Background'),
       "evidences":doc.get('Evidences'),
-      "victim":doc.get('Victim')
+      "victim":doc.get('Victim'),
+      "x":doc.get('x'),
+      "y":doc.get('y')
     };
   });
 
@@ -112,6 +114,10 @@ async function addCharacter(id: string) {
 
 async function deleteCharacter(boardId: string, charId: string) {
   await deleteDoc(doc(db,"murdermysteries",boardId,"Characters",charId))
+}
+
+async function setCharacterPosition(boardId: string, charId: string, x: number, y: number) {
+  await updateDoc(doc(db,"murdermysteries",boardId,"Characters",charId), {"x": x, "y": y})
 }
 
 const express = require("express");
@@ -170,6 +176,18 @@ express_app.post("/add-char/:id", async (req: any, res: any) => {
 
 express_app.delete("/delete-char/:boardId/:charId", async (req: any, res: any) => {
   await deleteCharacter(req.params.boardId,req.params.charId);
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.boardId,time_now)
+  let characters = await getCharacters(req.params.boardId)
+  res.json({
+    "lastModified": time_now,
+    "characters": characters
+  })
+});
+
+express_app.post("/set-char-pos/:boardId/:charId", async (req: any, res: any) => {
+  const {x, y} = req.body
+  await setCharacterPosition(req.params.boardId,req.params.charId, x, y);
   let time_now = Timestamp.now()
   await setLastModified(req.params.boardId,time_now)
   let characters = await getCharacters(req.params.boardId)
