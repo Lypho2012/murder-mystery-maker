@@ -64,11 +64,13 @@
 .character-div {
     width: 130px;
     height: 140px;
-    padding-top: 10px;
     background-color: rgb(253, 255, 240);
     &:hover .character-topbar{
         visibility: visible;
     }
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
 }
 
 .character-topbar {
@@ -77,7 +79,7 @@
     position: fixed;
     visibility: hidden;
     justify-content: flex-end;
-    width: 100%;
+    width: 100px;
 }
 
 .character-profile-img {

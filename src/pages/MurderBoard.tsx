@@ -39,7 +39,6 @@ const CharacterItem: React.FC<CharacterItemProps> = ({ character, handleShowDele
           top: y, 
           width: 'fit-content',
           height: 'fit-content',
-
           cursor: 'grab'}} className="character-div">
             <div className="character-topbar">
               <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/edit.png")} alt="edit button" onClick={(e)=> {e.stopPropagation()}} /></button>
