@@ -17,9 +17,10 @@ interface CharacterItemProps {
     setDeleteCharId: (id: number) => void;
     x: number;
     y: number;
+    boardId: any;
 }
 
-const CharacterItem: React.FC<CharacterItemProps> = ({ character, handleShowDeleteConfirmation, setDeleteCharId, x, y }) => {
+const CharacterItem: React.FC<CharacterItemProps> = ({ character, handleShowDeleteConfirmation, setDeleteCharId, x, y, boardId }) => {
     
     const [{ opacity }, dragRef] = useDrag(
       () => ({
@@ -32,6 +33,8 @@ const CharacterItem: React.FC<CharacterItemProps> = ({ character, handleShowDele
       [character, x, y]
     );
 
+    const navigate = useNavigate()
+
     return (
         <div ref={dragRef as any} style={{ 
           opacity,position: 'absolute', 
@@ -41,7 +44,10 @@ const CharacterItem: React.FC<CharacterItemProps> = ({ character, handleShowDele
           height: 'fit-content',
           cursor: 'grab'}} className="character-div">
             <div className="character-topbar">
-              <button className="character-topbar-button"><img className="character-topbar-button-img" src={require("../images/edit.png")} alt="edit button" onClick={(e)=> {e.stopPropagation()}} /></button>
+              <button className="character-topbar-button">
+                <img className="character-topbar-button-img" src={require("../images/edit.png")} alt="edit button" onClick={(e)=> {
+                  e.stopPropagation();
+                  navigate("/edit-character/"+boardId+"/"+character["id"])}} /></button>
               <button className="character-topbar-button">
                 <img className="character-topbar-button-img" src={require("../images/delete.png")} alt="delete button" onClick={(e)=> {
                 e.stopPropagation();
@@ -193,6 +199,7 @@ function MurderBoardContent() {
                 setDeleteCharId={setDeleteCharId}
                 x={character["x"]}
                 y={character["y"]}
+                boardId={boardId}
             />)
       }
       <Modal show={showDeleteConfirmation} onHide={handleCloseDeleteConfirmation}>

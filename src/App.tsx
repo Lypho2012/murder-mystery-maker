@@ -3,6 +3,7 @@ import { Routes, Route, BrowserRouter} from 'react-router-dom'
 import Home from './pages/Home';
 import MurderBoard from './pages/MurderBoard';
 import SavedBoards from './pages/SavedBoards';
+import EditCharacter from './pages/EditCharacter';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home/>}/>
         <Route path="/murder-board/:boardId" element={<MurderBoard/>}/>
         <Route path="/saved-boards" element={<SavedBoards/>}/>
+        <Route path="/edit-character/:boardId/:charId" element={<EditCharacter/>}/>
       </Routes>
     </div>
     </BrowserRouter>
