@@ -91,7 +91,7 @@ function MurderBoardContent() {
     setTitle(newTitle)
     const performQuery = async () => {
         try {
-          const result = await axios.post('http://localhost:8000/set-name/'+boardId,{title:newTitle});
+          const result = await axios.post('http://localhost:8000/set-title/'+boardId,{title:newTitle});
           setLastSaved(new Timestamp(
             result.data.seconds,
             result.data.nanoseconds

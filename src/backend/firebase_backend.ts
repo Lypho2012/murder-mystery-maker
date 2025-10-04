@@ -30,11 +30,11 @@ async function getBoards() {
 
   const boardPromises = data_snapshot.docs.map(async (doc) => {
     const lastModified = await getLastModified(doc.id);
-    const name = await getName(doc.id);
+    const title = await getTitle(doc.id);
     return {
       "id": doc.id,
       "last modified": lastModified,
-      "name": name
+      "name": title
     };
   });
 
@@ -50,18 +50,12 @@ async function getField(id: string, field: string) {
   return null;
 }
 
-async function getCharacterField(docref: DocumentReference, field: string) {
-  const data = await getDoc(docref);
-  if (data.exists()) return data.data()[field]
-  return null;
-}
-
 async function getLastModified(id: string) {
   const res = await getField(id,"last modified")
   return res
 }
 
-async function getName(id: string) {
+async function getTitle(id: string) {
   const res = await getField(id,"name")
   return res
 }
@@ -71,7 +65,7 @@ async function setLastModified(id: string, newValue: any) {
   await updateDoc(ref, {"last modified": newValue});
 }
 
-async function setName(id: string, newValue: string) {
+async function setTitle(id: string, newValue: string) {
   const ref = doc(db, 'murdermysteries', id);
   await updateDoc(ref, {"name": newValue});
 }
@@ -120,6 +114,18 @@ async function setCharacterPosition(boardId: string, charId: string, x: number, 
   await updateDoc(doc(db,"murdermysteries",boardId,"Characters",charId), {"x": x, "y": y})
 }
 
+async function setName(boardId: string, charId: string, newValue: string) {
+  const ref = doc(db, 'murdermysteries', boardId, "Characters", charId);
+  await updateDoc(ref, {"name": newValue});
+}
+
+async function getName(boardId: string, charId: string) {
+  const ref = doc(db, 'murdermysteries', boardId, "Characters", charId);
+  const data = await getDoc(ref);
+  if (data.exists()) return data.data()["name"]
+  return null;
+}
+
 const express = require("express");
 const cors = require("cors");
 
@@ -140,14 +146,14 @@ express_app.get("/get-last-modified/:id", async (req: any, res: any) => {
   res.send(lastModified);
 });
 
-express_app.get("/get-name/:id", async (req: any, res: any) => {
-  const name = await getName(req.params.id);
-  res.send(name);
+express_app.get("/get-title/:id", async (req: any, res: any) => {
+  const title = await getTitle(req.params.id);
+  res.send(title);
 });
 
-express_app.post("/set-name/:id", async (req: any, res: any) => {
+express_app.post("/set-title/:id", async (req: any, res: any) => {
   const {title} = req.body
-  await setName(req.params.id,title);
+  await setTitle(req.params.id,title);
   let time_now = Timestamp.now()
   await setLastModified(req.params.id,time_now)
   res.send(time_now);
@@ -195,4 +201,17 @@ express_app.post("/set-char-pos/:boardId/:charId", async (req: any, res: any) =>
     "lastModified": time_now,
     "characters": characters
   })
+});
+
+express_app.post("/set-name/:boardId/:charId", async (req: any, res: any) => {
+  const {name} = req.body
+  await setName(req.params.boardId, req.params.charId,name);
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.boardId,time_now)
+  res.send(time_now);
+});
+
+express_app.get("/get-name/:boardId/:charId", async (req: any, res: any) => {
+  let name = await getName(req.params.boardId, req.params.charId);
+  res.send(name);
 });
