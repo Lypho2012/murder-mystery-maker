@@ -3,6 +3,8 @@ import "./EditCharacter.css"
 import { useEffect, useState } from "react"
 import { Timestamp } from "firebase/firestore/lite"
 import axios from "axios"
+import EditCharacterBackground from "./components/EditCharacterBackground"
+import EditCharacterDescription from "./components/EditCharacterDescription"
 
 function EditCharacter() {
     const {boardId, charId} = useParams()
@@ -49,7 +51,11 @@ function EditCharacter() {
             <button id="back-button"><img id="back-button-img" src={require("../images/back_button.png")} alt="back button" onClick={()=> {navigate("/murder-board/"+boardId)}} /></button>
             <input type="text" id="char-name" value={name} onChange={e => changeName(e.target.value)}/>
             <div>Last Saved {lastSaved.toDate().toLocaleDateString()} {lastSaved.toDate().toLocaleTimeString()}</div>
-      
+
+            <div style={{display:"flex",flexDirection:"row",width:"100%",height:"100%"}}>
+                <EditCharacterBackground/>
+                <EditCharacterDescription/>
+            </div>
         </div>
     )
 }

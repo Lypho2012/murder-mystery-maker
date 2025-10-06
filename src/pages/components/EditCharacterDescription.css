@@ -1,0 +1,15 @@
+#char-description-div {
+    width: 50vw;
+    text-align: left;
+    max-height: 100%;
+}
+#edit-character-profile-img {
+    display: block;
+    margin: auto;
+    margin-bottom: 20px;
+    width: 30vw;
+}
+#char-physical-description {
+    width: 100%;
+    height: 100px;
+}
