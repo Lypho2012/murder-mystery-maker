@@ -1,3 +1,4 @@
+// npx tsx firebase_backend.ts
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, doc, getDoc, Timestamp, updateDoc, addDoc, DocumentReference, deleteDoc } from 'firebase/firestore/lite';
@@ -126,6 +127,25 @@ async function getName(boardId: string, charId: string) {
   return null;
 }
 
+async function addEvidenceButton(boardId: string, charId: string) {
+  const docref = doc(db, 'murdermysteries', boardId, "Characters", charId);
+  await addDoc(collection(docref, "Evidence buttons"), {
+    selected_evidences: []
+  })
+}
+
+async function getCharBackground(boardId: string, charId: string) {
+  const ref = doc(db, 'murdermysteries', boardId, "Characters", charId);
+  const data = await getDoc(ref);
+  if (data.exists()) return data.data()["Character background"]
+  return null;
+}
+
+async function setCharBackground(boardId: string, charId: string, content: any) {
+  const ref = doc(db, 'murdermysteries', boardId, "Characters", charId);
+  await updateDoc(ref,{"Character background":content});
+}
+
 const express = require("express");
 const cors = require("cors");
 
@@ -214,4 +234,21 @@ express_app.post("/set-name/:boardId/:charId", async (req: any, res: any) => {
 express_app.get("/get-name/:boardId/:charId", async (req: any, res: any) => {
   let name = await getName(req.params.boardId, req.params.charId);
   res.send(name);
+});
+
+express_app.post("/add-evidence-button/:boardId/:charId", async (req: any, res: any) => {
+  let id = await addEvidenceButton(req.params.boardId, req.params.charId)
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.boardId,time_now)
+  res.send(id);
+});
+express_app.post("/set-char-background/:boardId/:charId", async (req: any, res: any) => {
+  const {content} = req.body
+  await setCharBackground(req.params.boardId, req.params.charId,content);
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.boardId,time_now)
+});
+express_app.get("/get-char-background/:boardId/:charId", async (req: any, res: any) => {
+  let content = await getCharBackground(req.params.boardId, req.params.charId);
+  res.send(content)
 });
