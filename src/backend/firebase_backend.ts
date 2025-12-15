@@ -129,9 +129,10 @@ async function getName(boardId: string, charId: string) {
 
 async function addEvidenceButton(boardId: string, charId: string) {
   const docref = doc(db, 'murdermysteries', boardId, "Characters", charId);
-  await addDoc(collection(docref, "Evidence buttons"), {
+  const ref = await addDoc(collection(docref, "Evidence buttons"), {
     selected_evidences: []
   })
+  return ref.id
 }
 
 async function getCharBackground(boardId: string, charId: string) {
@@ -156,6 +157,29 @@ async function getCharDescription(boardId: string, charId: string) {
 async function setCharDescription(boardId: string, charId: string, content: any) {
   const ref = doc(db, 'murdermysteries', boardId, "Characters", charId);
   await updateDoc(ref,{"Character description":content});
+}
+
+async function getEvidenceList(boardId: string) {
+  const ref = collection(db, 'murdermysteries', boardId,'Evidences');
+  const data_snapshot = await getDocs(ref);
+  const promises = data_snapshot.docs.map(async (doc) => {
+    return {
+      "id": doc.id,
+      "description": doc.get('Description'),
+      "level":doc.get('Level')
+    };
+  });
+
+  const data_list = await Promise.all(promises);
+  
+  return data_list;
+}
+
+async function getSelectedEvidences(boardId: string, charId: string, buttonId: string) {
+  const ref = doc(db, 'murdermysteries', boardId, "Characters", charId, "Evidence buttons", buttonId);
+  const data = await getDoc(ref);
+  if (data.exists()) return data.data()["selected_evidences"]
+  return null;
 }
 
 const express = require("express");
@@ -272,5 +296,13 @@ express_app.post("/set-char-description/:boardId/:charId", async (req: any, res:
 });
 express_app.get("/get-char-description/:boardId/:charId", async (req: any, res: any) => {
   let content = await getCharDescription(req.params.boardId, req.params.charId);
+  res.send(content)
+});
+express_app.get("/get-evidence-list/:boardId", async (req: any, res: any) => {
+  let content = await getEvidenceList(req.params.boardId);
+  res.send(content)
+});
+express_app.get("/get-selected-evidences/:boardId/:charId/:buttonId", async (req: any, res: any) => {
+  let content = await getSelectedEvidences(req.params.boardId, req.params.charId, req.params.buttonId);
   res.send(content)
 });

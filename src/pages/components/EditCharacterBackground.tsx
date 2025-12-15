@@ -8,11 +8,16 @@ function EditCharacterBackground() {
   const cursorPos = useRef<any>(null)
   const [content,setContent] = useState('')
   const {boardId,charId} = useParams()
+  const [showEvidenceSelection, setShowEvidenceSelection] = useState(false)
+  const [selectedEvidence,setSelectedEvidence] = useState<any>([])
+  const [evidenceList,setEvidenceList] = useState<any>([])
 
   const fetchData = async() => {
     try {
       const result = await axios.get(`http://localhost:8000/get-char-background/${boardId}/${charId}`);
       setContent(result.data)
+      const result2 = await axios.get(`http://localhost:8000/get-evidence-list/${boardId}`);
+      setEvidenceList(result2.data)
     } catch (e) {
       console.error("Error updating data:", e);
     }
@@ -21,7 +26,7 @@ function EditCharacterBackground() {
     fetchData()
   },[])
   
-  const handleEditorClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+  document.addEventListener('click', (event:any) => {
     const target = event.target as HTMLElement;
     
     if (target.tagName === 'BUTTON' && target.id) {
@@ -30,18 +35,28 @@ function EditCharacterBackground() {
       
       handleClickEvidence(event);
     }
-  }, []);
+  })
 
   const handleClickEvidence = (event: any) => {
     const buttonId = event.currentTarget.id
+    const performQuery = async() => {
+      try {
+        const result = await axios.get(`http://localhost:8000/get-selected-evidences/${boardId}/${charId}/${buttonId}`);
+        setSelectedEvidence(result.data)
+      } catch (e) {
+        console.error("Error updating data:", e);
+    }}
+    performQuery()
+    setShowEvidenceSelection(true)
   }
+
   const updateContent = (newContent: string) => {
     setContent(newContent);
     const performQuery = async() => {
-    try {
-      await axios.post(`http://localhost:8000/set-char-background/${boardId}/${charId}`, { content: newContent });
-    } catch (e) {
-      console.error("Error updating data:", e);
+      try {
+        await axios.post(`http://localhost:8000/set-char-background/${boardId}/${charId}`, { content: newContent });
+      } catch (e) {
+        console.error("Error updating data:", e);
     }}
     performQuery()
   }
@@ -51,32 +66,29 @@ function EditCharacterBackground() {
 
     const selection = window.getSelection()
 
-    let buttonId = ''
     const performQuery = async () => {
       try {
         const result = await axios.post('http://localhost:8000/add-evidence-button/'+boardId+'/'+charId)
-        buttonId = result.data
+        const button = document.createElement("button") 
+        button.id = result.data
+        button.textContent = "*"
+        button.contentEditable = "false"
+
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+
+          range.insertNode(button)
+
+          updateContent(contentRef.current.innerHTML)
+
+        } else {
+          const newContent = `${content}${button}`
+          updateContent(newContent)
+        }
       } catch (e) {
         console.error("Error fetching data:", e)
     }}
     performQuery()
-
-    const button = document.createElement("button") 
-    button.id = buttonId
-    button.textContent = "*"
-    button.contentEditable = "false"
-
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-
-      range.insertNode(button)
-
-      updateContent(contentRef.current.innerHTML)
-
-    } else {
-      const newContent = `${content}${button}`
-      updateContent(newContent)
-    }
   }
 
   const getCursor = (el: any) => {
@@ -119,6 +131,17 @@ function EditCharacterBackground() {
     contentRef.current.focus()
   },[content]);
 
+  const handleCheckboxChange = (event:any) => {
+    const value = event.target.id;
+    const isChecked = event.target.checked;
+
+    if (isChecked) {
+      setSelectedEvidence([...selectedEvidence, value]);
+    } else {
+      setSelectedEvidence(selectedEvidence.filter((item:any) => item !== value));
+    }
+  };
+
   return (
     <div id="char-background-div" style={{margin:"10px"}}>
       <button onClick={insertButton} style={{ marginBottom: '10px' }}>
@@ -132,6 +155,16 @@ function EditCharacterBackground() {
       dangerouslySetInnerHTML={{__html:content}}
       style={{"border":"black solid 1px","textAlign":"left"}}>
       </div>
+      {showEvidenceSelection && 
+      <div>
+        <button onClick={() =>setShowEvidenceSelection(false)}>X</button>
+        {evidenceList.map((item:any) => {
+          <label key={item.id}>
+            <input id={item.id} type="checkbox" checked={selectedEvidence.includes(item.id)} onChange={handleCheckboxChange}/>
+            {item.description}
+          </label>
+        })}
+      </div>}
     </div>
   )
 }
