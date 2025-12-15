@@ -35,44 +35,44 @@ function EditCharacterBackground() {
   const handleClickEvidence = (event: any) => {
     const buttonId = event.currentTarget.id
   }
-  const updateContent = useCallback(async (newContent: string) => {
+  const updateContent = async (newContent: string) => {
     setContent(newContent);
     try {
       await axios.post(`http://localhost:8000/set-char-background/${boardId}/${charId}`, { content: newContent });
     } catch (e) {
       console.error("Error updating data:", e);
     }
-  }, [boardId, charId])
+  }
 
   const insertButton = async () => {
-    // cursorPos.current = getCursor(contentRef.current)
+    cursorPos.current = getCursor(contentRef.current)
 
-    // const selection = window.getSelection()
+    const selection = window.getSelection()
 
-    // let buttonId = null
-    // try {
-    //   const result = await axios.post('http://localhost:8000/add-evidence-button/'+boardId+'/'+charId)
-    //   buttonId = result.data
-    // } catch (e) {
-    //   console.error("Error fetching data:", e)
-    // }
+    let buttonId = null
+    try {
+      const result = await axios.post('http://localhost:8000/add-evidence-button/'+boardId+'/'+charId)
+      buttonId = result.data
+    } catch (e) {
+      console.error("Error fetching data:", e)
+    }
 
-    // const buttonHTML = `<button id="${buttonId}">*</button>`
+    const button = document.createElement("button") 
+    button.id = buttonId
+    button.textContent = "*"
+    button.contentEditable = "false"
 
-    // if (selection && selection.rangeCount > 0) {
-    //   const range = selection.getRangeAt(0);
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
 
-    //   const tempDiv = document.createElement('div')
-    //   tempDiv.innerHTML = buttonHTML
+      range.insertNode(button)
 
-    //   range.insertNode(tempDiv.firstChild as ChildNode)
+      updateContent(contentRef.current.innerHTML)
 
-    //   updateContent(contentRef.current.innerHTML)
-
-    // } else {
-    //   const newContent = `${content}${buttonHTML}`
-    //   updateContent(newContent)
-    // }
+    } else {
+      const newContent = `${content}${button}`
+      updateContent(newContent)
+    }
   }
 
   const getCursor = (el: any) => {
@@ -80,18 +80,23 @@ function EditCharacterBackground() {
     if (!selection || selection.rangeCount == 0) return 0
 
     const range = selection.getRangeAt(0)
-    const preRange = range?.cloneRange()
-    preRange?.selectNodeContents(el)
-    preRange?.setEnd(range.endContainer,range.endOffset)
+    const preRange = range.cloneRange()
+    preRange.selectNodeContents(el)
+    preRange.setEnd(range.endContainer,range.endOffset)
 
-    return preRange?.toString().length
+    return preRange.toString().length
   }
 
   const setCursor = (el: any, offset:any) => {
     const selection = window.getSelection()
     const range = document.createRange()
     if (el.childNodes[0]) {
-      range.setStart(el.childNodes[0],offset)
+      let i = 0
+      while (offset > el.childNodes[i].textContent.length) {
+        offset -= el.childNodes[i].textContent.length
+        i ++
+      }
+      range.setStart(el.childNodes[i],offset)
       range.collapse(true)
       selection?.removeAllRanges()
       selection?.addRange(range)
@@ -120,8 +125,8 @@ function EditCharacterBackground() {
       suppressContentEditableWarning={true}
       contentEditable="true"
       onInput={handleInput}
+      dangerouslySetInnerHTML={{__html:content}}
       style={{"border":"black solid 1px","textAlign":"left"}}>
-        {content}
       </div>
     </div>
   )
