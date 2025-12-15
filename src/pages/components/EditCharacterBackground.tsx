@@ -35,13 +35,15 @@ function EditCharacterBackground() {
   const handleClickEvidence = (event: any) => {
     const buttonId = event.currentTarget.id
   }
-  const updateContent = async (newContent: string) => {
+  const updateContent = (newContent: string) => {
     setContent(newContent);
+    const performQuery = async() => {
     try {
       await axios.post(`http://localhost:8000/set-char-background/${boardId}/${charId}`, { content: newContent });
     } catch (e) {
       console.error("Error updating data:", e);
-    }
+    }}
+    performQuery()
   }
 
   const insertButton = async () => {
@@ -49,13 +51,15 @@ function EditCharacterBackground() {
 
     const selection = window.getSelection()
 
-    let buttonId = null
-    try {
-      const result = await axios.post('http://localhost:8000/add-evidence-button/'+boardId+'/'+charId)
-      buttonId = result.data
-    } catch (e) {
-      console.error("Error fetching data:", e)
-    }
+    let buttonId = ''
+    const performQuery = async () => {
+      try {
+        const result = await axios.post('http://localhost:8000/add-evidence-button/'+boardId+'/'+charId)
+        buttonId = result.data
+      } catch (e) {
+        console.error("Error fetching data:", e)
+    }}
+    performQuery()
 
     const button = document.createElement("button") 
     button.id = buttonId

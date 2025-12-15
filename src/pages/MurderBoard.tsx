@@ -68,7 +68,7 @@ function MurderBoardContent() {
 
   const fetchData = async () => {
       try {
-          const result = await axios.get('http://localhost:8000/get-name/'+boardId);
+          const result = await axios.get('http://localhost:8000/get-title/'+boardId);
           setTitle(result.data)
 
           const result2 = await axios.get('http://localhost:8000/get-last-modified/'+boardId);

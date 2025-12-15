@@ -146,6 +146,18 @@ async function setCharBackground(boardId: string, charId: string, content: any) 
   await updateDoc(ref,{"Character background":content});
 }
 
+async function getCharDescription(boardId: string, charId: string) {
+  const ref = doc(db, 'murdermysteries', boardId, "Characters", charId);
+  const data = await getDoc(ref);
+  if (data.exists()) return data.data()["Character description"]
+  return null;
+}
+
+async function setCharDescription(boardId: string, charId: string, content: any) {
+  const ref = doc(db, 'murdermysteries', boardId, "Characters", charId);
+  await updateDoc(ref,{"Character description":content});
+}
+
 const express = require("express");
 const cors = require("cors");
 
@@ -250,5 +262,15 @@ express_app.post("/set-char-background/:boardId/:charId", async (req: any, res: 
 });
 express_app.get("/get-char-background/:boardId/:charId", async (req: any, res: any) => {
   let content = await getCharBackground(req.params.boardId, req.params.charId);
+  res.send(content)
+});
+express_app.post("/set-char-description/:boardId/:charId", async (req: any, res: any) => {
+  const {content} = req.body
+  await setCharDescription(req.params.boardId, req.params.charId,content);
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.boardId,time_now)
+});
+express_app.get("/get-char-description/:boardId/:charId", async (req: any, res: any) => {
+  let content = await getCharDescription(req.params.boardId, req.params.charId);
   res.send(content)
 });
