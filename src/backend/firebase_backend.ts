@@ -135,6 +135,11 @@ async function addEvidenceButton(boardId: string, charId: string) {
   return ref.id
 }
 
+async function deleteEvidenceButton(boardId: string, charId: string, buttonId: string) {
+  const docref = doc(db, 'murdermysteries', boardId, "Characters", charId, "Evidence buttons", buttonId);
+  await deleteDoc(docref)
+}
+
 async function getCharBackground(boardId: string, charId: string) {
   const ref = doc(db, 'murdermysteries', boardId, "Characters", charId);
   const data = await getDoc(ref);
@@ -277,6 +282,11 @@ express_app.post("/add-evidence-button/:boardId/:charId", async (req: any, res: 
   let time_now = Timestamp.now()
   await setLastModified(req.params.boardId,time_now)
   res.send(id);
+});
+express_app.delete("/delete-evidence-button/:boardId/:charId/:buttonId", async (req: any, res: any) => {
+  await deleteEvidenceButton(req.params.boardId, req.params.charId, req.params.buttonId)
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.boardId,time_now)
 });
 express_app.post("/set-char-background/:boardId/:charId", async (req: any, res: any) => {
   const {content} = req.body

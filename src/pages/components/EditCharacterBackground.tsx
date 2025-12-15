@@ -143,6 +143,29 @@ function EditCharacterBackground() {
     }
   };
 
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type == 'childList') {
+          mutation.removedNodes.forEach((node)=>{
+            if (node.nodeName == "BUTTON"){
+              const performQuery = async() => {
+                try {
+                  await axios.delete('http://localhost:8000/delete-evidence-button/'+boardId+'/'+charId+'/'+(node as HTMLButtonElement).id)
+                } catch (e) {
+                  console.log(e)
+                }
+              }
+              performQuery()
+            }
+          })
+        }
+      }
+    })
+    if (contentRef.current)
+      observer.observe(contentRef.current, {childList:true})
+  })
+
   return (
     <div id="char-background-div" style={{margin:"10px"}}>
       <button onClick={insertButton} style={{ marginBottom: '10px' }}>
@@ -157,6 +180,7 @@ function EditCharacterBackground() {
       style={{"border":"black solid 1px","textAlign":"left"}}>
       </div>
       
+      {(showEvidenceList || showSelectedList) &&
       <div style={{width:"calc(100% - 10px)",height:"300px",border:"black solid 1px",position:"fixed",backgroundColor:"white"}}>
         {showEvidenceList && <>
         <button onClick={() =>setShowEvidenceList(false)}
@@ -186,7 +210,7 @@ function EditCharacterBackground() {
           ): <></>)}
         </div>
         </>}
-      </div>
+      </div>}
     </div>
   )
 }
