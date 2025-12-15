@@ -8,7 +8,8 @@ function EditCharacterBackground() {
   const cursorPos = useRef<any>(null)
   const [content,setContent] = useState('')
   const {boardId,charId} = useParams()
-  const [showEvidenceSelection, setShowEvidenceSelection] = useState(false)
+  const [showEvidenceList, setShowEvidenceList] = useState(false)
+  const [showSelectedList, setShowSelectedList] = useState(false)
   const [selectedEvidence,setSelectedEvidence] = useState<any>([])
   const [evidenceList,setEvidenceList] = useState<any>([])
 
@@ -47,7 +48,7 @@ function EditCharacterBackground() {
         console.error("Error updating data:", e);
     }}
     performQuery()
-    setShowEvidenceSelection(true)
+    setShowSelectedList(true)
   }
 
   const updateContent = (newContent: string) => {
@@ -155,16 +156,37 @@ function EditCharacterBackground() {
       dangerouslySetInnerHTML={{__html:content}}
       style={{"border":"black solid 1px","textAlign":"left"}}>
       </div>
-      {showEvidenceSelection && 
-      <div>
-        <button onClick={() =>setShowEvidenceSelection(false)}>X</button>
-        {evidenceList.map((item:any) => {
-          <label key={item.id}>
-            <input id={item.id} type="checkbox" checked={selectedEvidence.includes(item.id)} onChange={handleCheckboxChange}/>
-            {item.description}
-          </label>
-        })}
-      </div>}
+      
+      <div style={{width:"calc(100% - 10px)",height:"300px",border:"black solid 1px",position:"fixed",backgroundColor:"white"}}>
+        {showEvidenceList && <>
+        <button onClick={() =>setShowEvidenceList(false)}
+          style={{position:"absolute",right:"1px"}}>X</button>
+        <button onClick={() =>{setShowEvidenceList(false);setShowSelectedList(true);}}
+          style={{position:"absolute",right:"40px"}}>Back</button>
+        <div style={{width:"100%",position:"absolute",top:"40px"}}>
+          {evidenceList.map((item:any) => (
+            <label key={item.id}>
+              <input id={item.id} type="checkbox" checked={selectedEvidence.includes(item.id)} onChange={handleCheckboxChange}/>
+              {item.description}
+            </label>
+          ))}
+        </div>
+        </>}
+        {showSelectedList && <>
+        <button onClick={() =>setShowSelectedList(false)}
+          style={{position:"absolute",right:"1px"}}>X</button>
+        <button onClick={() =>{setShowEvidenceList(true);setShowSelectedList(false)}}
+          style={{position:"absolute",right:"40px"}}>Edit</button>
+        <div style={{width:"100%",position:"absolute",top:"40px"}}>
+          {evidenceList.map((item:any) => selectedEvidence.includes(item.id) ? (
+            <label key={item.id}>
+              <input id={item.id} type="checkbox" checked={selectedEvidence.includes(item.id)} onChange={handleCheckboxChange}/>
+              {item.description}
+            </label>
+          ): <></>)}
+        </div>
+        </>}
+      </div>
     </div>
   )
 }
