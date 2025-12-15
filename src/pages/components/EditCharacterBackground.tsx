@@ -12,6 +12,7 @@ function EditCharacterBackground() {
   const [showSelectedList, setShowSelectedList] = useState(false)
   const [selectedEvidence,setSelectedEvidence] = useState<any>([])
   const [evidenceList,setEvidenceList] = useState<any>([])
+  const [activeButtonId, setActiveButtonId] = useState("")
 
   const fetchData = async() => {
     try {
@@ -40,6 +41,7 @@ function EditCharacterBackground() {
 
   const handleClickEvidence = (event: any) => {
     const buttonId = event.currentTarget.id
+    setActiveButtonId(buttonId)
     const performQuery = async() => {
       try {
         const result = await axios.get(`http://localhost:8000/get-selected-evidences/${boardId}/${charId}/${buttonId}`);
@@ -133,14 +135,20 @@ function EditCharacterBackground() {
   },[content]);
 
   const handleCheckboxChange = (event:any) => {
-    const value = event.target.id;
-    const isChecked = event.target.checked;
+    const value = event.target.id
 
-    if (isChecked) {
+    if (event.target.checked) {
       setSelectedEvidence([...selectedEvidence, value]);
     } else {
       setSelectedEvidence(selectedEvidence.filter((item:any) => item !== value));
     }
+    const performQuery = async() => {
+      try {
+        await axios.post(`http://localhost:8000/set-selected-evidences/${boardId}/${charId}/${activeButtonId}`, { content: selectedEvidence });
+      } catch (e) {
+        console.error("Error updating data:", e);
+    }}
+    performQuery()
   };
 
   useEffect(() => {
