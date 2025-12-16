@@ -35,6 +35,7 @@ function SavedBoards() {
     const navigate = useNavigate();
     return (
         <div id="load-div">
+            <button id="home-button"><img id="home-button-img" src={require("../images/home_button.png")} alt="home button" onClick={()=> {navigate("/")}} /></button>
             {
                 prevBoards.length == 0 ? 
                 <div>Empty</div> 

@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import MurderBoard from './pages/MurderBoard';
 import SavedBoards from './pages/SavedBoards';
 import EditCharacter from './pages/EditCharacter';
+import EvidenceBank from './pages/EvidenceBank';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/murder-board/:boardId" element={<MurderBoard/>}/>
+        <Route path="/evidence-bank/:boardId" element={<EvidenceBank/>}/>
         <Route path="/saved-boards" element={<SavedBoards/>}/>
         <Route path="/edit-character/:boardId/:charId" element={<EditCharacter/>}/>
       </Routes>

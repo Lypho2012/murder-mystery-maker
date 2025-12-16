@@ -180,8 +180,11 @@ function MurderBoardContent() {
 
   return (
     <div id="board-div">
-      <button id="home-button"><img id="home-button-img" src={require("../images/home_button.png")} alt="home button" onClick={()=> {navigate("/")}} /></button>
-      
+      <div style={{display:"flex",flexDirection:"row",position:"absolute"}}>
+      <button style={{position:"relative"}} id="home-button"><img id="home-button-img" src={require("../images/home_button.png")} alt="home button" onClick={()=> {navigate("/")}} /></button>
+      <button style={{position:"relative"}} id="home-button" onClick={()=> {navigate("/evidence-bank/"+boardId)}}>Evidence bank</button>
+      <button style={{position:"relative"}} id="home-button" onClick={()=> {navigate("/timeline-maker/"+boardId)}}>Timeline maker</button>
+      </div>
       <input type="text" id="board-title" value={title} onChange={e => changeTitle(e.target.value)}/>
       <div>Last Saved {lastSaved.toDate().toLocaleDateString()} {lastSaved.toDate().toLocaleTimeString()}</div>
       

@@ -192,6 +192,15 @@ async function setSelectedEvidences(boardId: string, charId: string, buttonId: s
   await updateDoc(ref,{"selected_evidences":content});
 }
 
+async function addEvidence(boardId: string) {
+  const colref = collection(db, 'murdermysteries', boardId, "Evidences");
+  const ref = await addDoc(colref, {
+    Description:"",
+    Level:""
+  })
+  return ref.id
+}
+
 const express = require("express");
 const cors = require("cors");
 
@@ -326,4 +335,10 @@ express_app.post("/set-selected-evidences/:boardId/:charId/:buttonId", async (re
   await setSelectedEvidences(req.params.boardId, req.params.charId, req.params.buttonId, content);
   let time_now = Timestamp.now()
   await setLastModified(req.params.boardId,time_now)
+});
+express_app.post("/add-evidence/:boardId", async (req: any, res: any) => {
+  let id = await addEvidence(req.params.boardId)
+  let time_now = Timestamp.now()
+  await setLastModified(req.params.boardId,time_now)
+  res.send(id)
 });
